@@ -5,12 +5,24 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"path/filepath"
 
 	"github.com/bwmarrin/discordgo"
 )
 
 func main() {
-	cfg, err := ReadConfig(os.Args[1])
+	configPath := os.Getenv("CONFIG_PATH")
+
+	if configPath == "" {
+		cwd, err := os.Getwd()
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "failed to get working directory: %v\n", err)
+			os.Exit(1)
+		}
+		configPath = filepath.Join(cwd, "config.json")
+	}
+
+	cfg, err := ReadConfig(configPath)
 	dg, err := discordgo.New("Bot " + cfg.Token)
 	if err != nil {
 		fmt.Println("error creating Discord session,", err)
