@@ -19,7 +19,7 @@ func SendTicketEmbed(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		CustomID: "create_ticket",
 	}
 
-	msg := &discordgo.InteractionResponseData{
+	msg := &discordgo.MessageSend{
 		Embeds: []*discordgo.MessageEmbed{embed},
 		Components: []discordgo.MessageComponent{
 			discordgo.ActionsRow{
@@ -28,10 +28,10 @@ func SendTicketEmbed(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		},
 	}
 
-	s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-		Type: discordgo.InteractionResponseChannelMessageWithSource,
-		Data: msg,
-	})
+	_, err := s.ChannelMessageSendComplex(i.ChannelID, msg)
+	if err != nil {
+		fmt.Println("Error sending message:", err)
+	}
 }
 
 func ShowTicketForm(s *discordgo.Session, i *discordgo.InteractionCreate) {

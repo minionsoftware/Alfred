@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	cfg, err := ReadConfig(os.Args[2])
+	cfg, err := ReadConfig(os.Args[1])
 	dg, err := discordgo.New("Bot " + cfg.Token)
 	if err != nil {
 		fmt.Println("error creating Discord session,", err)
@@ -18,7 +18,9 @@ func main() {
 	}
 
 	dg.AddHandlerOnce(ready)
-	dg.AddHandler(interactionCreate)
+	dg.AddHandler(func(s *discordgo.Session, i *discordgo.InteractionCreate) {
+	    interactionCreate(s, i, cfg)
+	})
 
 	dg.Identify.Intents = discordgo.IntentsGuildMessages | discordgo.IntentsGuilds | discordgo.IntentsGuildMembers
 
